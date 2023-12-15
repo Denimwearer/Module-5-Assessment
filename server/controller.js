@@ -23,6 +23,7 @@ module.exports = {
                 country_id INT NOT NULL REFERENCES countries(country_id)
             );
 
+    
             insert into countries (name)
             values ('Afghanistan'),
             ('Albania'),
@@ -219,6 +220,12 @@ module.exports = {
             ('Yemen'),
             ('Zambia'),
             ('Zimbabwe');
+
+            insert into cities (name, rating, country_id)
+            values ('Kingston', 5, 85 ),
+            ('Tokyo', 4, 86),
+            ('Brooklyn', 3, 187);
+
         `
       )
       .then(() => {
@@ -249,7 +256,7 @@ module.exports = {
             '${name}',
             ${rating},
             ${countryId}
-        )
+        );
     `
       )
       .then((dbRes) => {
@@ -264,12 +271,28 @@ module.exports = {
         SELECT cities.city_id, cities.name city, cities.rating, countries.country_id, countries.name country 
         FROM cities 
         JOIN countries
-        ON  cities.country_id = countries.country_id 
+        ON  cities.country_id = countries.country_id
+        ORDER BY cities.rating DESC;
     `
       )
       .then((dbRes) => {
         res.status(200).send(dbRes[0]);
       })
       .catch((error) => console.log(error));
+  },
+  deleteCity: (req, res) => {
+    sequelize
+      .query(
+        `
+        DELETE FROM cities 
+        WHERE id = ${req.params.city_id};
+    `
+      )
+      .then((dbRes) => {
+        res.status(200).send(dbRes[0]);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   },
 };
