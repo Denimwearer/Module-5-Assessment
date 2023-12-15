@@ -20,7 +20,7 @@ module.exports = {
                 city_id SERIAL PRIMARY KEY, 
                 name VARCHAR(255), 
                 rating INT, 
-                country_id INT REFERENCES countries(country_id)
+                country_id INT NOT NULL REFERENCES countries(country_id)
             );
 
             insert into countries (name)
@@ -254,6 +254,22 @@ module.exports = {
       )
       .then((dbRes) => {
         res.status(200).send(dbRes[0]);
-      });
+      })
+      .catch((error) => console.log(error));
+  },
+  getCities: (req, res) => {
+    sequelize
+      .query(
+        `
+        SELECT cities.city_id, cities.name city, cities.rating, countries.country_id, countries.name country 
+        FROM cities 
+        JOIN countries
+        ON  cities.country_id = countries.country_id 
+    `
+      )
+      .then((dbRes) => {
+        res.status(200).send(dbRes[0]);
+      })
+      .catch((error) => console.log(error));
   },
 };
